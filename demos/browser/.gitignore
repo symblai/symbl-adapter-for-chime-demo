@@ -1,0 +1,8 @@
+/debug.js
+dist/*
+dist/
+dist/**
+*.sw[a-z]
+node_modules/
+node_modules
+node_modules/**

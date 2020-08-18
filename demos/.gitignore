@@ -1,0 +1,16 @@
+node_modules
+*/node_modules
+node_modules/*
+node_modules/**
+
+*.sw[a-z]
+dist/*
+dist/**
+*/dist/*
+**/dist/*
+**/dist
+browser/dist/*
+browser/dist/**
+./browser/dist
+./browser/dist/
+./browser/dist/*

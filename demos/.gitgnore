@@ -1,0 +1,10 @@
+*.swp
+
+/node_modules
+./node_modules/*
+./node_modules/**
+node_modules
+
+# vim swap files
+*.sw[a-p]
+.DS_Store

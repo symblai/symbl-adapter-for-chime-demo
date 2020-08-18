@@ -1,0 +1,17 @@
+# run integration tests if files in these directories change
+demos/serverless/
+demos/browser/app/meeting/
+demos/browser/app/meetingV2/
+src/
+integration/
+
+# exceptions
+!src/versioning/Versioning.ts
+!README.md
+!demos/browser/README.md
+!demos/browser/package.json
+!demos/device/README.md
+!demos/serverless/README.md
+!demos/singlejs/README.md
+!demos/videohelpdesk/README.md
+!guides/

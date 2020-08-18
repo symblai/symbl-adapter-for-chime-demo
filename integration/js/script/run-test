@@ -1,0 +1,107 @@
+#!/bin/bash -i
+
+function start_demo_meeting {
+    cd ~/build/aws/amazon-chime-sdk-js/demos/browser
+    uuid=$(uuidgen)
+    mkdir -p logs
+    if [[ $1 == 'v1' ]]
+    then
+      extra_args='--app=meeting'
+      echo "Starting the demo v1"
+    else
+      echo "Starting the demo v2"
+    fi
+    npm run start $extra_args &> logs/$uuid.log &
+}
+
+function did_server_start {
+    if ! lsof -i:$1 > /dev/null
+    then
+        echo 0
+    else
+        echo 1
+    fi
+}
+
+function wait_for_demo_to_start {
+    echo "Waiting for the demo to start"
+    threshold=40
+    started=0
+    retry_count=1
+    while [ $started -eq 0 ] && [ $retry_count -lt $threshold ]
+    do
+      started=$(did_server_start $1)
+      sleep 3
+      retry_count=$(($retry_count+1))
+    done
+
+    if [ $retry_count -eq $threshold ]
+    then
+     echo "meeting demo not started"
+     exit
+    fi
+}
+
+curr=`pwd`
+
+if [[ $1 == screen_share ]]
+then
+  start_demo_meeting 'v1'
+else
+  start_demo_meeting
+fi
+
+wait_for_demo_to_start 8080
+cd $curr
+cd ../
+. ~/.bashrc
+
+case $1 in
+   audio)
+      r audio_test.config.json
+      r app_quit_audio_test.config.json
+      r meeting_leave_audio_test.config.json
+      ;;
+   video)
+      r video_test.config.json
+      r video_test_simulcast.config.json
+      r app_quit_video_test.config.json
+      r meeting_leave_video_test.config.json
+      r reconnection_test.config.json
+      ;;
+   meeting_end)
+      r meeting_end_test.config.json
+      ;;
+   screen_share)
+      r screen_sharing_test.config.json
+      r screen_viewing_test.config.json
+      r meeting_leave_screen_share_test.config.json
+      r app_quit_screen_share_test.config.json
+      ;;
+   content_share)
+      r content_share_screen_capture_test.config.json
+      r content_share_only_allow_two_test.config.json
+      r content_share_join_later_test.config.json
+      r app_quit_content_share_test.config.json
+      r meeting_leave_content_share_test.config.json
+      r content_share_video_test.config.json
+      ;;
+   data_message)
+      r data_message_test.config.json
+      ;;
+   *)
+      r audio_test.config.json
+      r video_test.config.json
+      r meeting_end_test.config.json
+      r app_quit_audio_test.config.json
+      r app_quit_video_test.config.json
+      r meeting_leave_audio_test.config.json
+      r meeting_leave_video_test.config.json
+      r screen_sharing_test.config.json
+      r screen_viewing_test.config.json
+      r meeting_leave_screen_share_test.config.json
+      r app_quit_screen_share_test.config.json
+      ;;
+esac
+
+./js/script/failure-check

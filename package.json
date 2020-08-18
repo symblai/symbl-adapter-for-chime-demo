@@ -1,0 +1,110 @@
+{
+  "name": "amazon-chime-sdk-js",
+  "version": "1.13.5",
+  "description": "Amazon Chime SDK for JavaScript",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "clean": "rm -rf .nyc_output build node_modules",
+    "copy": "node script/copy-protocol.js",
+    "check": "node script/check-code-style.js",
+    "prepublishOnly": "script/publish",
+    "postpublish": "script/postpublish",
+    "lint": "eslint . --ext .ts,.tsx,.js --fix",
+    "build": "npm install && node script/barrelize.js && tsc && npm run copy",
+    "prebuild:release": "script/prebuild",
+    "build:release": "npm run build && npm run lint && npm run check && npm run doc && npm run test:retry",
+    "postbuild:release": "script/postbuild",
+    "prebuild:publish": "script/prebuild --publish",
+    "build:publish": "npm run build && npm run lint && npm run check && npm run doc && npm run test:retry",
+    "postbuild:publish": "script/postbuild",
+    "predoc": "rm -rf docs && node script/build-guides.js",
+    "doc": "node node_modules/typedoc/bin/typedoc --options typedoc.json",
+    "postdoc": "node script/update-typedoc-link.js",
+    "test": "npm run test:fast",
+    "test:fast": "cross-env TS_NODE_CACHE=false nyc mocha -rv ts-node/register \"test/**/*.test.ts\"",
+    "test:slow": "cross-env MOCHA_TEST_DELAY_MS=100 npm run test:fast",
+    "test:retry": "(npm run test:fast || npm run test:fast || npm run test:fast || npm run test:fast || npm run test:fast)",
+    "test:integration": "cd ./integration/js && npm run test && npm run upload-logs-to-s3",
+    "test:integration-audio": "cd ./integration/js && npm run test -- audio && npm run upload-logs-to-s3",
+    "test:integration-video": "cd ./integration/js && npm run test -- video && npm run upload-logs-to-s3",
+    "test:integration-meeting-end": "cd ./integration/js && npm run test -- meeting_end && npm run upload-logs-to-s3",
+    "test:integration-screen-share": "cd ./integration/js && npm run test -- screen_share && npm run upload-logs-to-s3",
+    "test:integration-content-share": "cd ./integration/js && npm run test -- content_share && npm run upload-logs-to-s3",
+    "test:integration-data-message": "cd ./integration/js && npm run test -- data_message && npm run upload-logs-to-s3"
+  },
+  "devDependencies": {
+    "@fluffy-spoon/substitute": "^1.89.0",
+    "@types/chai": "^4.1.7",
+    "@types/chai-as-promised": "^7.1.0",
+    "@types/mocha": "^5.2.6",
+    "@types/sinon": "^7.0.12",
+    "@typescript-eslint/eslint-plugin": "^1.9.0",
+    "@typescript-eslint/parser": "^1.9.0",
+    "awesome-typescript-loader": "^5.2.1",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "cross-env": "^6.0.3",
+    "eslint": "^5.16.0",
+    "eslint-config-prettier": "^4.3.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "eslint-plugin-simple-import-sort": "^4.0.0",
+    "fs-extra": "^8.1.0",
+    "mocha": "^7.1.1",
+    "nyc": "^15.0.0",
+    "prettier": "^1.17.1",
+    "sinon": "^7.3.2",
+    "spawn-wrap": "^2.0.0",
+    "ts-node": "^8.1.0",
+    "typedoc": "^0.16.0",
+    "typescript": "^3.4.5"
+  },
+  "dependencies": {
+    "@types/dom-mediacapture-record": "^1.0.4",
+    "detect-browser": "^4.7.0",
+    "protobufjs": "~6.8.8",
+    "resize-observer": "^1.0.0"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/aws/amazon-chime-sdk-js"
+  },
+  "nyc": {
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "src/**/*.d.ts",
+      "src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text-summary",
+      "html",
+      "cobertura"
+    ],
+    "sourceMap": true,
+    "instrument": true,
+    "report-dir": "./coverage",
+    "all": true,
+    "check-coverage": true,
+    "branches": 100,
+    "lines": 100,
+    "functions": 100,
+    "statements": 100
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "printWidth": 100
+  }
+}
