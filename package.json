@@ -1,7 +1,7 @@
 {
-  "name": "amazon-chime-sdk-js",
-  "version": "1.13.5",
-  "description": "Amazon Chime SDK for JavaScript",
+  "name": "Symbl Adapter for Chime SDK",
+  "version": "0.5.0",
+  "description": "Symbl Adapter for Amazon Chime SDKt",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "files": [

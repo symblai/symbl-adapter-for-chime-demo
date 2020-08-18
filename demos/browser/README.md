@@ -1,6 +1,6 @@
 ## Browser Meeting
 
-This demo shows how to use the Amazon Chime SDK to build meeting applications for browsers.
+This demo allows you to use the Symbl Adapter for Chime SDK
 
 ### Prerequisites
 
@@ -10,8 +10,10 @@ To build, test, and run demos from source you will need:
 * npm 6.11 or higher
 
 Ensure you have AWS credentials configured in your `~/.aws` folder for a
-role with a policy allowing `chime:CreateMeeting`, `chime:DeleteMeeting`, and
-`chime:CreateAttendee`.
+role with a policy allowing
+* `chime:CreateMeeting`
+* `chime:DeleteMeeting`
+* `chime:CreateAttendee`
 
 ### Running the browser demos with a local server
 
@@ -25,25 +27,16 @@ role with a policy allowing `chime:CreateMeeting`, `chime:DeleteMeeting`, and
 
 Browser demo applications are located in the `app` folder. Current demos are:
 
-* `meeting` - incorporates all functionality into a videoconferencing application with a Bootstrap user interface
-* `meetingV2` (default) - A similar demo app to `meeting` with content share functionality 
+* `meetingV2`
 
 To run a specific demo application use:
 
 ```
-npm run start --app=<app>
+npm run start
 ```
 
 For example, to run the `meeting` demo, run:
 
 ```
-npm run start --app=meeting
-```
-
-If you don't specify the `--app` option, it will run the `meetingV2` demo
-
-After running `start` the first time, you can speed things up on subsequent iterations by using `start:fast`, e.g.
-
-```
-npm run start:fast (--app=<app>)
+npm run start
 ```

@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
-Description: Amazon Chime SDK Meeting Demo
+Description: Amazon Chime SDK + Symbl Meeting Demo
 Parameters:
   UseEventBridge:
     Description: Use EventBridge to process server side notifications

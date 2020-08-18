@@ -1,6 +1,6 @@
-## Serverless Demo
+## Serverless Deployment
 
-This demo shows how to deploy [Chime SDK Browser Demo](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/browser) as self-contained serverless applications.
+This demo shows how to deploy [Chime SDK Browser Demo](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/browser)with the Symbl Adapter as self-contained serverless applications.
 
 > *Note: deploying the serverless demo may incur extra charges in your AWS account.*
 
@@ -19,12 +19,12 @@ And install aws and sam command line tools:
 ### Run deployment script
 
 The following will create a CloudFormation stack containing a Lambda and
-API Gateway deployment that runs the `meeting` demo.
+API Gateway deployment that runs the `meetingV2` demo.
 
 ```
 cd demos/serverless
 npm install
-npm run deploy -- -r us-east-1 -b <my-bucket> -s <my-stack-name> -a meeting
+npm run deploy -- -r us-east-1 -b <my-bucket> -s <my-stack-name> -a meetingV2
 ```
 
 The script will create an S3 bucket and CloudFormation stack
