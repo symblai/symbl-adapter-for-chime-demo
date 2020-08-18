@@ -19,8 +19,6 @@ Once your access token is set you can call the constructor as shown below.
 ```
 /**
 @param {object} chime - chime instance
-    @implements {AudioVideoObserver}
-    @implements {DeviceChangeObserver}
     @property {object} configuration : {
         @property {object} credentials: {
             ...
@@ -147,10 +145,10 @@ npm install
 
 ## Set Up for Symbl
 
-##### Symbl Credentials
+#### Symbl Credentials
 * Create an account in the [Symbl Console](https://platform.symbl.ai) if you don't have one already.
 * After you login, you will find your appId and appSecret on the home page.
-* Create a `.env` file in `demos/browser` that includes your appId and appSecret as shown below.
+* Create a `.env` file in `demos/browser` and `demos/serverless/src` that includes your appId and appSecret as shown below.
 
 ```.env
 SYMBL_APP_ID=<xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx>
@@ -158,7 +156,8 @@ SYMBL_APP_SECRET=<xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 The App ID and App Secret are used to authenticate your session with Symbl by generating an access token.
-Your App ID and Secret should not be shared or posted publically.
+Your App ID and Secret should not be shared or posted publicly.
+
 
 ## Local Demo
 
@@ -174,12 +173,18 @@ To build, test, and run demos from source you will need:
 
 ### Serverless Deployment
 
-#### Prerequisites - Serverless Deployment
+
 
 ## Run deployment script
 
+Make sure you have built the browser application by running
+```
+cd demos/browser
+npm run build
+```
+
 The following will create a CloudFormation stack containing a Lambda and
-API Gateway deployment that runs the `meeting` demo.
+API Gateway deployment that runs the `meetingV2` demo.
 
 ```
 npm run deploy -- -r us-east-1 -b <my-bucket> -s <my-stack-name> -a meetingV2

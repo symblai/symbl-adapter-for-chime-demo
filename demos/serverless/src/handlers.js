@@ -4,6 +4,12 @@
 const AWS = require('./aws-sdk');
 const fs = require('fs');
 const { v4: uuidv4 } = require('./uuid');
+const fetch = require('./node-fetch');
+require('./dotenv').config();
+
+const symblAppId = process.env.SYMBL_APP_ID;
+const symblAppSecret = process.env.SYMBL_APP_SECRET;
+const symblApiBasePath = process.env.SYMBL_API_BASE_PATH || 'https://api.symbl.ai';
 
 // Store meetings in a DynamoDB table so attendees can join by meeting title
 const ddb = new AWS.DynamoDB();
@@ -79,12 +85,37 @@ exports.join = async(event, context) => {
     ExternalUserId: `${uuidv4().substring(0, 8)}#${query.name}`.substring(0, 64),
   }).promise());
 
+  var accessToken;
+  try {
+    const res = await fetch(`${symblApiBasePath}/oauth2/token:generate`, {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      redirect: 'follow',
+      referrerPolicy: 'no-referrer',
+      body: JSON.stringify({
+        type: 'application',
+        appId: symblAppId,
+        appSecret: symblAppSecret,
+      }),
+    });
+    accessToken = await res.json();
+  } catch (e) {
+    console.error('Error while issuing Symbl Token.', e);
+    return respond(e.toString(), 401);
+  }
+
   // Return the meeting and attendee responses. The client will use these
   // to join the meeting.
   return response(200, 'application/json', JSON.stringify({
     JoinInfo: {
       Meeting: meeting,
       Attendee: attendee,
+      Symbl: accessToken,
     },
   }, null, 2));
 };

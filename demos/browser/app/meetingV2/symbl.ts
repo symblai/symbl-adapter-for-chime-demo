@@ -1,6 +1,5 @@
 import { AudioVideoFacade } from '../../../../src/index';
 
-
 var currentCaption: Caption = null;
 var captionNum = 0;
 var activeTileId: number = null;
@@ -93,7 +92,6 @@ export class Insight {
         this.id = '' + hashCode(data.text + data.confidence);
         console.info('Creating insight', data, insights.includes(data));
         symblEvents.emit('insight', 'onInsightCreated', this);
-
     }
     createElement(): HTMLDivElement {
         let type = '';
@@ -184,14 +182,29 @@ export class Caption {
     }
 
     setVideoElement(videoElement: HTMLVideoElement) {
+        // if (this.videoElement === videoElement && this.videoElement.textTracks.length > 0) {
+        //     return;
+        // } else if (this.videoElement && this.videoElement.textTracks.length > 0) {
+        //     let textTrack = this.videoElement.textTracks[0];
+        //     textTrack.mode = 'hidden';
+        //     if (textTrack.cues.length > 0) {
+        //         let cue = textTrack.cues[textTrack.cues.length - 1] as VTTCue;
+        //         textTrack.removeCue(cue);
+        //     }
+        // }
         this.videoElement = videoElement;
         this.videoElement.style.transform = '';
-        this.textTrack = this.videoElement.addTextTrack('subtitles');
-        let cue = new VTTCue(this.videoElement.currentTime, this.videoElement.currentTime + 3, this.message);
-        this.textTrack.mode = Caption.subtitlesEnabled ? 'showing' : 'hidden';
-        cue.text = this.message;
-        this.textTrack.addCue(cue);
-        console.log('Set video element', videoElement, this.videoElement);
+        if (this.videoElement.textTracks.length === 0) {
+            this.textTrack = this.videoElement.addTextTrack('subtitles');
+            let cue = new VTTCue(this.videoElement.currentTime, this.videoElement.currentTime + 1, this.message);
+            this.textTrack.mode = Caption.subtitlesEnabled ? 'showing' : 'hidden';
+            this.textTrack.addCue(cue);
+        } else {
+            this.textTrack = this.videoElement.textTracks[0];
+            this.textTrack.mode = Caption.subtitlesEnabled ? 'showing' : 'hidden';
+
+        }
+        console.log('Set video element', this.videoElement);
     }
     set videoElementId(videoElementId: string) {
         let _videoElement = document.getElementById(videoElementId);
@@ -222,11 +235,14 @@ export class Caption {
         // Update Text in `closed-captioning-text`
         this.message = this.truncateMessage(message);
         if (this.textTrack) {
-            let cue = this.textTrack.cues[this.textTrack.cues.length - 1] as VTTCue;
-            // truncatedMessage = customVocabReplace(truncatedMessage);
-            this.textTrack.removeCue(cue);
-            cue.startTime = this.videoElement.currentTime;
-            cue.endTime = cue.startTime + 1;
+            var cue;
+            if (this.textTrack.cues.length > 0) {
+                cue = this.textTrack.cues[this.textTrack.cues.length - 1] as VTTCue;
+            }else{
+                cue = new VTTCue(this.videoElement.currentTime, this.videoElement.currentTime + 1, this.message);
+                cue.startTime = this.videoElement.currentTime;
+            }
+            cue.endTime = this.videoElement.currentTime + 1;
             cue.text = this.message;
             this.textTrack.addCue(cue);
         } else {
@@ -265,7 +281,6 @@ export class Caption {
 }
 
 var ssCount = 0;
-var currMessage: number = 0;
 class SymblSocket {
     id: number = ssCount++;
     userName: string = null;
@@ -301,9 +316,6 @@ class SymblSocket {
 
     }
     parseMessage(message: any) {
-        if (currMessage === message) {
-            console.log('message is equivalent', message);
-        }
         const data = JSON.parse(message);
         if (data.type === 'message_response') {
             for (let message of data.messages) {
@@ -465,6 +477,7 @@ class SymblSocket {
 
     }
 }
+
 export class Symbl {
     static ACCESS_TOKEN: string = null;
     static state: string = 'DISCONNECTED';
@@ -474,12 +487,8 @@ export class Symbl {
         'attendeeId': null,
         'externalUserId': null
     };
-    public socket: SymblSocket = null;
     public meeting: any = null;
-    public videoContainer: any = null;
     isMuted: boolean = false;
-    activeTileId: number = null;
-    tileFns: any = null;
     config: any = {
         confidenceThreshold: 0.5,
         languageCode: 'en-US',
@@ -583,9 +592,6 @@ export class Symbl {
             console.log('SymblSocket already exists', SymblSocket);
             if (symblSocket && symblSocket.requestStarted) {
                 return;
-                // this.socket.stopRequest();
-                // await this.socket.close();
-                // this.socket = null;
             } else {
                 return;
             }

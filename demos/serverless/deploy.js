@@ -6,7 +6,7 @@ const path = require("path");
 let region = 'us-east-1';
 let bucket = ``;
 let stack = ``;
-let app = `meeting`;
+let app = `meetingV2`;
 let useEventBridge = false;
 
 const packages = [
