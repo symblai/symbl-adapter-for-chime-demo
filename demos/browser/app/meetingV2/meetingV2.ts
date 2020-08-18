@@ -768,7 +768,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
                 @property {string} languageCode
                 @property {boolean} insightsEnabled
 		*/
-        this.symbl = new Symbl(
+        this.symbl = new Symbl( 
             this,
             {
                 confidenceThreshold: 0.5, // optional - default: 0.5

@@ -182,16 +182,6 @@ export class Caption {
     }
 
     setVideoElement(videoElement: HTMLVideoElement) {
-        // if (this.videoElement === videoElement && this.videoElement.textTracks.length > 0) {
-        //     return;
-        // } else if (this.videoElement && this.videoElement.textTracks.length > 0) {
-        //     let textTrack = this.videoElement.textTracks[0];
-        //     textTrack.mode = 'hidden';
-        //     if (textTrack.cues.length > 0) {
-        //         let cue = textTrack.cues[textTrack.cues.length - 1] as VTTCue;
-        //         textTrack.removeCue(cue);
-        //     }
-        // }
         this.videoElement = videoElement;
         this.videoElement.style.transform = '';
         if (this.videoElement.textTracks.length === 0) {
