@@ -764,16 +764,18 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
                 @property {string} meeting meeting name
             }
             @param {object} config - Symbl Configuration
-                @property {number} confidenceThreshold optional
-                @property {string} languageCode
-                @property {boolean} insightsEnabled
+                @property {number} confidenceThreshold  optional | default: 0.5 | 0.0 - 1.0 minimum confidence value produce valid insight
+                @property {string} languageCode         optional - default: 'en-US' | The language code as per the BCP 47 specification
+                @property {boolean} insightsEnabled     optional - default: true -- false if language code is not english.
+                @property {boolean} speechRecognition   optional - default: false -- Speaker identity to use for audio in this WebSocket connection. If omitted, no speaker identification will be used for processing.
 		*/
-        this.symbl = new Symbl( 
+        this.symbl = new Symbl(
             this,
             {
-                confidenceThreshold: 0.5, // optional - default: 0.5
-                languageCode: 'en-US', // optional - default: 'en-US'
-                insightsEnabled: true, // optional - default: true
+                confidenceThreshold: 0.5,
+                languageCode: 'en-US',
+                insightsEnabled: true,
+                speechRecognition: true,
             }
         );
 

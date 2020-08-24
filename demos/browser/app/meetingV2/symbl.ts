@@ -15,9 +15,10 @@ const hashCode = function(s: string): number {
     return h;
 };
 
-class SymblEvents {
+export class SymblEvents {
     subtitleHandlers: any = [];
     insightHandlers: any = [];
+    transcriptHandlers: any = [];
     constructor() { }
     getHandlerArr(handlerType: string): any {
         let handlerArr;
@@ -25,53 +26,101 @@ class SymblEvents {
             handlerArr = this.subtitleHandlers;
         } else if (handlerType === 'insight') {
             handlerArr = this.insightHandlers;
+        } else if(handlerType === 'transcript') {
+            handlerArr = this.transcriptHandlers;
+        }else {
+            throw new Error(`Unhandled SymblEvent handler type ${handlerType}`);
         }
         return handlerArr;
     }
     subscribe(type: string, handler: any) {
-        const handlerArr = this.getHandlerArr(type);
-        if (handlerArr) {
-            handlerArr.push(handler);
-            return () => {
-                let index = this.subtitleHandlers.indexOf(handler);
-                if (index > -1) {
-                    let removedHandler = this.subtitleHandlers.splice(index, 1);
-                    return removedHandler;
+        try {
+            const handlerArr = this.getHandlerArr(type);
+            if (handlerArr) {
+                handlerArr.push(handler);
+                return () => {
+                    let index = this.subtitleHandlers.indexOf(handler);
+                    if (index > -1) {
+                        let removedHandler = this.subtitleHandlers.splice(index, 1);
+                        return removedHandler;
+                    }
                 }
             }
+        } catch (err) {
+            console.log(err);
+            throw new Error(`Error subscribing to SymblEvent type ${type} ${err}`);
         }
     }
     emit(type: string, event: string, ...args: any[]) {
-        const handlerArr = this.getHandlerArr(type);
-        if (handlerArr) {
-            handlerArr.forEach((handler: any) => {
-                if (handler[event]) {
-                    handler[event](...args);
-                }
-            })
+        try {
+            const handlerArr = this.getHandlerArr(type);
+            if (handlerArr) {
+                handlerArr.forEach((handler: any) => {
+                    if (handler[event]) {
+                        handler[event](...args);
+                    }
+                })
+            }
+        } catch (err) {
+            console.error(err);
+            throw new Error(`Error emitting event type ${type} ${err}`);
         }
     }
 }
 const symblEvents = new SymblEvents();
 
 
-class Transcript {
-    lines: Array<{ user: string, text: string }> = [];
+export class Transcript {
+    lines: Array<TranscriptItem> = [];
     constructor() {
 
     }
-    addLine(user: string, text: string): void {
-        this.lines.unshift({ user: user, text: text });
+    addLine(transcriptItem: TranscriptItem): void {
+        this.lines.unshift(transcriptItem);
     }
-    toString(): string {
+    printAll(): string {
         let content = '';
         for (let line of this.lines) {
-            content = content + `${line.user}: ${line.text}\n`;
+            content = content + `${line.userName}: ${line.message}\n`;
         }
         // console.log('Transcript\n', content);
         return content;
     }
 }
+
+export class TranscriptItem {
+    message: string = null;
+    userName: string = null;
+    id: string = null;
+    userId: string = null;
+    timeStamp: Date = new Date();
+    constructor(data: {
+        isFinal: true,
+        payload: any,
+        punctuated: {
+            transcript: string,
+            type: 'recognition_result',
+        },
+        user: {
+            id: string,
+            name: string,
+            userId: string,
+        },
+        type: string
+    },
+    ) {
+        if(data && data.isFinal !== true){
+            throw new Error('Message is not final transcript response');
+        }
+
+        this.message = data.punctuated.transcript;
+        this.userName = data.user.name;
+        this.id = data.user.id;
+        this.userId = data.user.userId;
+        symblEvents.emit('transcript', 'onTranscriptCreated', this);
+    }
+}
+
 const transcript = new Transcript();
 
 
@@ -84,8 +133,7 @@ export class Insight {
         type: string
     } = null;
     id: string = null;
-    text: string = null;
-    element: HTMLDivElement = null;
+    _element: HTMLDivElement = null;
 
     constructor(data: any) {
         this.data = data;
@@ -131,15 +179,20 @@ export class Insight {
         this.element = element;
         return element;
     }
-    get type() {
+    get type(): string { // action_item || question || follow_up
         return this.data.type;
     }
-    set type(type: string) { }
-    get container() {
-        return document.getElementById('receive-insight');
+    set type(type: string) {
+        // No op
+    }
+    get text(): string {
+        return this.data.text;
+    }
+    set element(element: HTMLDivElement) {
+        this._element = element;
     }
     add(container: HTMLElement = null) {
-        if (container) {
+        if (container && this.element) {
             container.append(this.element);
             container.scroll(0, 1000000);
         }
@@ -158,27 +211,24 @@ export class Caption {
     name: string = '';
     captionNum: number = 0;
     textTrack: TextTrack = null;
-    isSubtitle: boolean = false;
     activeTileId: number = null;
     _videoElementId: string = null;
     videoElement: HTMLVideoElement = null;
     message: string = null;
     static subtitlesEnabled: boolean = true;
     static toggleSubtitles(show: boolean): void {
-
+        // implement
     }
     constructor(data: any) {
         this.data = data
         this.captionNum = captionNum;
         captionNum++;
-
-
-        this.isSubtitle = true;
-
         this.setName(data.user.name);
         if (data.punctuated.transcript) {
             this.message = this.truncateMessage(data.punctuated.transcript);
         }
+        symblEvents.emit('subtitle', 'subtitleCreated', this);
+
     }
 
     setVideoElement(videoElement: HTMLVideoElement) {
@@ -202,7 +252,7 @@ export class Caption {
             this._videoElementId = videoElementId;
             this.setVideoElement(_videoElement);
         } else {
-            console.error('Could not retrieve Video Element. ')
+            console.error('Could not retrieve Video Element by Id.')
         }
     }
     setName(name: string) {
@@ -228,42 +278,36 @@ export class Caption {
             var cue;
             if (this.textTrack.cues.length > 0) {
                 cue = this.textTrack.cues[this.textTrack.cues.length - 1] as VTTCue;
-            }else{
+            } else {
                 cue = new VTTCue(this.videoElement.currentTime, this.videoElement.currentTime + 1, this.message);
                 cue.startTime = this.videoElement.currentTime;
             }
             cue.endTime = this.videoElement.currentTime + 1;
             cue.text = this.message;
             this.textTrack.addCue(cue);
+
         } else {
             // this.contentSpan.innerText = message;
 
         }
+        symblEvents.emit('subtitle', 'subtitleUpdated', this);
     }
     finalize(message: string) {
-        if (this.isSubtitle) {
-
-        } else {
-            this.contentSpan = message;
-        }
+        this.contentSpan = message;
     }
     kill(killNow: boolean) {
-        if (this.isSubtitle) {
-
-        } else {
-            currentCaption = null;
-            if (this.element) {
-                this.element.classList.add('fade-out')
-                // this.element.className = this.element.className + ' fade-out';
-                if (killNow) {
-                    this.element.style.display = 'none';
+        currentCaption = null;
+        if (this.element) {
+            this.element.classList.add('fade-out')
+            // this.element.className = this.element.className + ' fade-out';
+            if (killNow) {
+                this.element.style.display = 'none';
+                this.element.remove();
+            } else {
+                setTimeout(() => {
+                    this.element.style.display = "none";
                     this.element.remove();
-                } else {
-                    setTimeout(() => {
-                        this.element.style.display = "none";
-                        this.element.remove();
-                    }, 1000);
-                }
+                }, 1000);
             }
         }
     }
@@ -307,13 +351,6 @@ class SymblSocket {
     }
     parseMessage(message: any) {
         const data = JSON.parse(message);
-        if (data.type === 'message_response') {
-            for (let message of data.messages) {
-                transcript.addLine(message.from.name, message.payload.content);
-            }
-            console.log('Got WS message response');
-            return;
-        }
         if (data.type === 'insight_response') {
             data.insights.forEach((insight: any) => {
                 new Insight(insight);
@@ -332,20 +369,20 @@ class SymblSocket {
                 break;
             case 'recognition_result':
                 // transcription continued
+                if(data.message && data.message.isFinal){
+                    new TranscriptItem(data.message);
+                }
                 if (currentCaption) {
-                    symblEvents.emit('subtitle', 'subtitleUpdated', currentCaption);
                     currentCaption.updateContent(data.message.punctuated.transcript);
                 } else if (currentCaption && currentCaption.activeTileId !== activeTileId) {
                     console.info('Killing caption and adding to video-', activeTileId);
 
                     currentCaption.kill(true);
                     currentCaption = new Caption(data.message);
-                    symblEvents.emit('subtitle', 'subtitleCreated', currentCaption);
                     // console.error('no current caption area');
                 } else {
                     console.info('Creating first caption');
                     currentCaption = new Caption(data.message);
-                    symblEvents.emit('subtitle', 'subtitleCreated', currentCaption);
                 }
                 if (data.message.isFinal && currentCaption) {
                     currentCaption.kill(false);
@@ -406,6 +443,7 @@ class SymblSocket {
             }
         }));
         const handleSuccess = (stream: any) => {
+            const AudioContext = window.AudioContext;
             const context = new AudioContext();
             const source = context.createMediaStreamSource(stream);
             const processor = context.createScriptProcessor(1024, 1, 1);
@@ -413,7 +451,7 @@ class SymblSocket {
             source.connect(this.gainNode);
             this.gainNode.connect(processor);
             processor.connect(context.destination);
-            processor.onaudioprocess = (e) => {
+            processor.onaudioprocess = (e: any) => {
                 // convert to 16-bit payload
                 const inputData = e.inputBuffer.getChannelData(0) || new Float32Array(this.bufferSize);
                 const targetBuffer = new Int16Array(inputData.length);
@@ -469,22 +507,24 @@ class SymblSocket {
 }
 
 export class Symbl {
+    static events: SymblEvents = symblEvents;
     static ACCESS_TOKEN: string = null;
     static state: string = 'DISCONNECTED';
     public chimeConfiguration: any = {};
-    public meetingId: string = null;
+    public meetingId: string = null; // Meeting UUID
     public credentials: { [key: string]: string } = {
         'attendeeId': null,
         'externalUserId': null
     };
     public meeting: any = null;
     isMuted: boolean = false;
-    config: any = {
+    config: any = { // Symbl Config
         confidenceThreshold: 0.5,
         languageCode: 'en-US',
-        insightsEnabled: true
+        insightsEnabled: true,
+        speechRecognition: true,
     }
-    url: string = null;
+    url: string = null; // Realtime API endpoint
     constructor(
         chime: {
             configuration: {
@@ -500,6 +540,7 @@ export class Symbl {
             confidenceThreshold: number,
             languageCode: string,
             insightsEnabled: boolean,
+            speechRecognition: boolean,
         },
 
     ) {
@@ -550,6 +591,10 @@ export class Symbl {
         return symblEvents.subscribe('insight', handler);
     }
 
+    subscribeToTranscriptEvents(handler: { onTranscriptCreated: (callback: any) => void; }): any {
+        return symblEvents.subscribe('transcript', handler);
+    }
+
     muteHandler(isMuted: boolean) {
         console.log('Symbl mute', isMuted);
         if (symblSocket) {
@@ -595,7 +640,7 @@ export class Symbl {
                 ws.close();
                 ws = null;
             }
-            console.warn('Opening a new mf websocket', ws);
+            console.warn('Opening a new websocket', ws);
             ws = new WebSocket(this.url);
             Symbl.state = 'CONNECTING';
             ws.onerror = (err: Event) => {
