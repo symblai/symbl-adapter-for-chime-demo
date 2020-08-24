@@ -188,6 +188,9 @@ export class Insight {
     get text(): string {
         return this.data.text;
     }
+    get element(): HTMLDivElement {
+        return this._element;
+    }
     set element(element: HTMLDivElement) {
         this._element = element;
     }

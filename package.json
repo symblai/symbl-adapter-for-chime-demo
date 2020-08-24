@@ -1,5 +1,5 @@
 {
-  "name": "Symbl Adapter for Chime SDK",
+  "name": "symbl-chime-adapter-js",
   "version": "0.5.0",
   "description": "Symbl Adapter for Amazon Chime SDKt",
   "main": "build/index.js",
