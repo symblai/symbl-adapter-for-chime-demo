@@ -793,15 +793,21 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
             subtitleCreated: (subtitle: Caption) => {
                 console.warn('Subtitle created', subtitle);
                 // Retrieve the video element that you wish to add the subtitle tracks to.
-                const activeVideoElement = getActiveVideoElement() as HTMLVideoElement;
+                var activeVideoElement = getActiveVideoElement() as HTMLVideoElement;
                 if (activeVideoElement) {
-                    subtitle.setVideoElement(activeVideoElement);
+                    const tileIndex = this.tileIdForAttendeeId(subtitle.data.asignee.id);
+                    activeVideoElement = document.getElementById(`video-${tileIndex}`) as HTMLVideoElement
                 }
+                subtitle.setVideoElement(activeVideoElement);
             },
             subtitleUpdated: (subtitle: Caption) => {
-                const activeVideoElement = getActiveVideoElement() as HTMLVideoElement;
+                var activeVideoElement = getActiveVideoElement() as HTMLVideoElement;
                 // Check if the video element is set correctly
                 if (!subtitle.videoElement && activeVideoElement) {
+                    if(this.roster[subtitle.data.asignee.id].active){
+                        const tileIndex = this.tileIdForAttendeeId(subtitle.data.asignee.id);
+                        activeVideoElement = document.getElementById(`video-${tileIndex}`) as HTMLVideoElement
+                    }
                     subtitle.setVideoElement(activeVideoElement);
                 }
                 if (activeVideoElement && subtitle.videoElement !== activeVideoElement) {

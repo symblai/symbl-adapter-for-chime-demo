@@ -511,6 +511,7 @@ class SymblSocket {
 
 export class Symbl {
     static events: SymblEvents = symblEvents;
+    static transcripts: Transcript = transcript;
     static ACCESS_TOKEN: string = null;
     static state: string = 'DISCONNECTED';
     public chimeConfiguration: any = {};
