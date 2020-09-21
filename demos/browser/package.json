@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "amazon-chime-sdk-js": "file:../..",
-    "aws-sdk": "^2.738.0",
+    "aws-sdk": "^2.753.0",
     "bootstrap": "^4.3.1",
     "compression": "^1.7.4",
     "dotenv": "^8.2.0",
@@ -50,6 +50,7 @@
     "mic": "^2.1.2",
     "node-fetch": "^2.6.0",
     "popper.js": "^1.15.0",
+    "symbl-chime-adapter": "^1.0.6",
     "uuid": "^8.3.0"
   },
   "license": "Apache-2.0",

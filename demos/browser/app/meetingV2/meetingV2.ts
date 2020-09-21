@@ -746,38 +746,44 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
         });
         await this.openAudioInputFromSelection();
         await this.openAudioOutputFromSelection();
-        this.audioVideo.start();
-		/**
-			@param {object} chime - chime instance
-                @implements {AudioVideoObserver}
-                @implements {DeviceChangeObserver}
-                @property {object} configuration : {
-                    @property {object} credentials: {
-                        ...
-                        @property {string} attendeeId -- Client attendee id
-                        @property {string} externalUserId
-                        @property {string} joinToken
-                        ...
-                    },
-                    @property {string} meetingId -- UUID of the meeting
-                },
+        Promise.resolve(this.audioVideo.start());
+        await this.joinSymbl();
+    }
+
+    async joinSymbl(){
+        /**
+			@param {object} chime - chime configuration
+            {
+                @property {string} attendeeId -- Client attendee id
+                @property {string} userName
+                @property {string} meetingId -- UUID of the meeting
                 @property {string} meeting meeting name
-            }
+            },
             @param {object} config - Symbl Configuration
+            {
                 @property {number} confidenceThreshold  optional | default: 0.5 | 0.0 - 1.0 minimum confidence value produce valid insight
                 @property {string} languageCode         optional - default: 'en-US' | The language code as per the BCP 47 specification
                 @property {boolean} insightsEnabled     optional - default: true -- false if language code is not english.
-                @property {boolean} speechRecognition   optional - default: false -- Speaker identity to use for audio in this WebSocket connection. If omitted, no speaker identification will be used for processing.
-		*/
-        this.symbl = new Symbl(
-            this,
-            {
-                confidenceThreshold: 0.5,
-                languageCode: 'en-US',
-                insightsEnabled: true,
-                speechRecognition: true,
             }
-        );
+		*/
+        console.log('Creating new symbl', Symbl.ACCESS_TOKEN, this.configuration);
+        try {
+            this.symbl = new Symbl(
+                {
+                    attendeeId: this.configuration.credentials.attendeeId,
+                    userName: this.configuration.credentials.externalUserId.split('#').pop(),
+                    meetingId: this.configuration.meetingId,
+                    meeting: this.meeting,
+                }, {
+                    confidenceThreshold: 0.5,
+                    languageCode: 'en-US',
+                    insightsEnabled: true,
+                }
+            );
+        } catch (err) {
+            console.error(err);
+            console.log('Symbl failed to create?');
+        }
 
         const getActiveVideoElement = (): HTMLVideoElement => {
             // Helper function to retrieve the primary video element
@@ -787,24 +793,24 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
         }
 
         const captioningHandler = {
-            onClosedCaptioningToggled: (ccEnabled: boolean) => {
+            onCaptioningToggled: (ccEnabled: boolean) => {
                 // Implement
             },
-            subtitleCreated: (subtitle: Caption) => {
-                console.warn('Subtitle created', subtitle);
+            onCaptionCreated: (subtitle: Caption) => {
+                console.warn('Caption created', subtitle);
                 // Retrieve the video element that you wish to add the subtitle tracks to.
                 var activeVideoElement = getActiveVideoElement() as HTMLVideoElement;
                 if (activeVideoElement) {
                     const tileIndex = this.tileIdForAttendeeId(subtitle.data.asignee.id);
-                    activeVideoElement = document.getElementById(`video-${tileIndex}`) as HTMLVideoElement
+                    activeVideoElement = document.getElementById(`video-16`) as HTMLVideoElement
                 }
                 subtitle.setVideoElement(activeVideoElement);
             },
-            subtitleUpdated: (subtitle: Caption) => {
+            onCaptionUpdated: (subtitle: Caption) => {
                 var activeVideoElement = getActiveVideoElement() as HTMLVideoElement;
                 // Check if the video element is set correctly
                 if (!subtitle.videoElement && activeVideoElement) {
-                    if(this.roster[subtitle.data.asignee.id].active){
+                    if (this.roster[subtitle.data.asignee.id].active) {
                         const tileIndex = this.tileIdForAttendeeId(subtitle.data.asignee.id);
                         activeVideoElement = document.getElementById(`video-${tileIndex}`) as HTMLVideoElement
                     }
