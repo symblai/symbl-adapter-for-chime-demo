@@ -67,7 +67,7 @@
     "detect-browser": "^4.7.0",
     "protobufjs": "~6.8.8",
     "resize-observer": "^1.0.0",
-    "symbl-chime-adapter": "^1.0.3"
+    "symbl-chime-adapter": "^1.0.9"
   },
   "license": "Apache-2.0",
   "repository": {

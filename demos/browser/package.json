@@ -50,7 +50,6 @@
     "mic": "^2.1.2",
     "node-fetch": "^2.6.0",
     "popper.js": "^1.15.0",
-    "symbl-chime-adapter": "^1.0.6",
     "uuid": "^8.3.0"
   },
   "license": "Apache-2.0",

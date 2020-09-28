@@ -35,7 +35,7 @@ import {
     ClientVideoStreamReceivingReport,
 } from '../../../../src/index';
 
-import { Symbl, Insight, Caption } from './symbl';
+import { Symbl, Insight, Caption } from 'symbl-chime-adapter';
 
 
 class DemoTileOrganizer {
