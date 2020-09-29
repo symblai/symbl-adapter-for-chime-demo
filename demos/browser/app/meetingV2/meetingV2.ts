@@ -35,7 +35,7 @@ import {
     ClientVideoStreamReceivingReport,
 } from '../../../../src/index';
 
-import { Symbl, Insight, Caption } from 'symbl-chime-adapter';
+import { Symbl, Insight, Caption, TranscriptItem } from 'symbl-chime-adapter';
 
 
 class DemoTileOrganizer {
@@ -750,7 +750,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
         await this.joinSymbl();
     }
 
-    async joinSymbl(){
+    async joinSymbl() {
         /**
 			@param {object} chime - chime configuration
             {
@@ -796,29 +796,29 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
             onCaptioningToggled: (ccEnabled: boolean) => {
                 // Implement
             },
-            onCaptionCreated: (subtitle: Caption) => {
-                console.warn('Caption created', subtitle);
+            onCaptionCreated: (caption: Caption) => {
+                console.warn('Caption created', caption);
                 // Retrieve the video element that you wish to add the subtitle tracks to.
                 var activeVideoElement = getActiveVideoElement() as HTMLVideoElement;
                 if (activeVideoElement) {
-                    const tileIndex = this.tileIdForAttendeeId(subtitle.data.asignee.id);
+                    const tileIndex = this.tileIdForAttendeeId(caption.data.user.userId);
                     activeVideoElement = document.getElementById(`video-16`) as HTMLVideoElement
                 }
-                subtitle.setVideoElement(activeVideoElement);
+                caption.setVideoElement(activeVideoElement);
             },
-            onCaptionUpdated: (subtitle: Caption) => {
+            onCaptionUpdated: (caption: Caption) => {
                 var activeVideoElement = getActiveVideoElement() as HTMLVideoElement;
                 // Check if the video element is set correctly
-                if (!subtitle.videoElement && activeVideoElement) {
-                    if (this.roster[subtitle.data.asignee.id].active) {
-                        const tileIndex = this.tileIdForAttendeeId(subtitle.data.asignee.id);
+                if (!caption.videoElement && activeVideoElement) {
+                    if (this.roster[caption.data.user.userId].active) {
+                        const tileIndex = this.tileIdForAttendeeId(caption.data.user.userId);
                         activeVideoElement = document.getElementById(`video-${tileIndex}`) as HTMLVideoElement
                     }
-                    subtitle.setVideoElement(activeVideoElement);
+                    caption.setVideoElement(activeVideoElement);
                 }
-                if (activeVideoElement && subtitle.videoElement !== activeVideoElement) {
+                if (activeVideoElement && caption.videoElement !== activeVideoElement) {
                     console.log('Active video element changed', activeVideoElement);
-                    subtitle.setVideoElement(activeVideoElement);
+                    caption.setVideoElement(activeVideoElement);
                 }
             },
         };
@@ -826,19 +826,58 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
 
         const insightHandler = {
             onInsightCreated: (insight: Insight) => {
-                // Creates a predesigned insight widget;
                 const element = insight.createElement();
                 // Customize any styling
                 element.classList.add('mx-auto');
-                element.style.width = '98%';
+                element.style.width = '100%';
+                element.style.margin = '0';
+                element.style.padding = '1rem';
+                const child = element.querySelector('div');
+                child.style.maxWidth = 'unset';
+                child.style.margin = 'unset';
+                console.log('insight element', element);
+
                 // Get container you wish to add insights to.
-                const insightContainer = document.getElementById('receive-insight');
+                const messageContainer = document.getElementById('receive-message');
+
                 // Call add on the insight object to add it to DIV
-                insight.add(insightContainer);
+                insight.add(messageContainer);
             }
         };
         // Subscribe to realtime insight events using the handler created above
         this.symbl.subscribeToInsightEvents(insightHandler);
+
+        const transcriptHandler = {
+            onTranscriptCreated: (transcript: TranscriptItem) => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <div style="margin: 0;">
+                        <div class="message-bubble-sender">
+                            ${transcript.userName}
+                            <span class="badge badge-secondary" style="margin-left: 15px;">Transcript</span>
+                        </div>
+                    <div class="message-bubble-self">
+                        <p class="markdown">${transcript.message}</p>
+                    </div>`
+                const messageContainer = document.getElementById('receive-message');
+                messageContainer.append(div);
+                messageContainer.scroll(0, 1000000);
+            }
+        };
+        this.symbl.subscribeToTranscriptEvents(transcriptHandler);
+
+
+        const summaryButton = document.getElementById('button-summary-url');
+        summaryButton.onclick = async () => {
+            console.info('got summary button click', this);
+            try {
+                const summaryUrl = await this.symbl.getSummaryUrl();
+                console.info('got summary url', summaryUrl);
+                await navigator.clipboard.writeText(summaryUrl);
+            } catch (err) {
+                console.error('Error writing to clipboard', err);
+            }
+        };
         await this.symbl.start();
     }
 
