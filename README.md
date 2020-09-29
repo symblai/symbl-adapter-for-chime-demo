@@ -18,18 +18,24 @@ Once your access token is set you can call the constructor as shown below.
 
 ```
 /**
-@param {object} chime - chime instance
-    @property {object} configuration : {
-        @property {object} credentials: {
-            ...
-            @property {string} attendeeId - Client attendee id
-            @property {string} externalUserId - User name
-            ...
+    @param {object} chime - chime instance
+        @property {object} configuration : {
+            @property {object} credentials: {
+                ...
+                @property {string} attendeeId -- Client attendee id
+                @property {string} externalUserId
+                @property {string} joinToken
+                ...
+            },
+            @property {string} meetingId -- UUID of the meeting
         },
-        @property {string} meetingId -- UUID of the Chime Meeting
-    },
-    @property {string} meeting - Meeting name
-}
+        @property {string} meeting meeting name
+    }
+    @param {object} config - Symbl Configuration
+        @property {number} confidenceThreshold  optional | default: 0.5 | 0.0 - 1.0 minimum confidence value produce valid insight
+        @property {string} languageCode         optional - default: 'en-US' | The language code as per the BCP 47 specification
+        @property {boolean} insightsEnabled     optional - default: true -- false if language code is not english.
+        @property {boolean} speechRecognition   optional - default: false -- Speaker identity to use for audio in this WebSocket connection. If omitted, no speaker identification will be used for processing.
 */
 const symbl = new Symbl({
     configuration: {
@@ -39,7 +45,12 @@ const symbl = new Symbl({
         },
         meetingId: "acbd0689-9b84-42f7-b8b8-9bc3aa7b057a".
     },
-    meeting: 'My Meeting Name'
+    {
+        confidenceThreshold: 0.5,
+        languageCode: 'en-US',
+        insightsEnabled: true,
+        speechRecognition: true,
+    }
 });
 ```
 

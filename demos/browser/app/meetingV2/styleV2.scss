@@ -67,7 +67,9 @@ $close-text-shadow: none;
 // Bootswatch
 // Variables ===================================================================
 // Navbar =======================================================================
-
+#button-summary-url > svg{
+    fill: white;
+}
 #closed-captioning-container {
 	position: absolute;
 	bottom: 0;

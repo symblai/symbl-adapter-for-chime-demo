@@ -3,7 +3,7 @@
     "outDir": "./build",
     "sourceMap": true,
     "noImplicitAny": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "module": "commonjs",

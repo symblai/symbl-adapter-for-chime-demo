@@ -1,5 +1,5 @@
 {
-  "name": "Symbl Adapter for Chime SDK",
+  "name": "symbl-chime-adapter-js",
   "version": "0.5.0",
   "description": "Symbl Adapter for Amazon Chime SDKt",
   "main": "build/index.js",
@@ -66,7 +66,8 @@
     "@types/dom-mediacapture-record": "^1.0.4",
     "detect-browser": "^4.7.0",
     "protobufjs": "~6.8.8",
-    "resize-observer": "^1.0.0"
+    "resize-observer": "^1.0.0",
+    "symbl-chime-adapter": "^1.0.9"
   },
   "license": "Apache-2.0",
   "repository": {
