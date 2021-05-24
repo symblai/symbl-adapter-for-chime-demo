@@ -128,6 +128,85 @@ const insightHandler = {
 this.symbl.subscribeToInsightEvents(insightHandler);
 ```
 
+### Realtime Topics
+Realtime topics are generated as Symbl processes the conversation in your video chat platform.
+When a topic is detected by Symbl and the `onTopicCreated` event is emitted, a `Topic` object is passed to the callback function provided in the `Topic` handler.
+The Symbl adapter exposes a handler function, `subscribeToTopicEvents`, that has a callback function `onTopicCreated`.
+Topics are enabled by default.
+
+- Example:
+
+When a topic event is emitted from the `onTopicCreate`d handler, you can use the `Topic` object returned and either use the createElement function to create a default element or you can use the data included in the Topic object returned in the handlers callback to create your own element, capture the data and store as a metric, etc…
+
+``` typescript
+        const topicHandler = {
+            onTopicCreated: (topic: Topic) => {
+                //Random font color for new topic
+                const content = topic.phrases;
+                const score = topic.score;
+                fontSize = score * 40 + 8;
+                let element = topic.createElement();
+                element.innerText = content;
+                element.style.fontSize=String(fontSize)+'px'
+                //In case you have a Topics document you can add this element with differnt font size of topic based on the score
+                document.getElementById('Topics').appendChild(element);
+
+            }
+        };
+        // Subscribe to realtime tracker events using the handler created above
+        this.symbl.subscribeToTopicEvents(topicHandler);
+```
+### Realtime Trackers
+Realtime trackers are generated as Symbl processes the conversation in your video chat platform.
+When an Tracker is detected by Symbl and the `onTrackerCreated` event is emitted, a `Tracker` object is passed to the callback function provided in the `Tracker` handler.
+The `Tracker` class holds data about the tracker generated.
+The Symbl adapter exposes a handler function, `subscribeToTrackerEvents`, that has a callback function `onTrackerCreated`.
+Trackers are enabled by adding a list of name and vocabulary pharses in the form of disctionaries to be found in a conversation.
+
+``` typescript
+new Symbl(chimeConfiguration, {trackers:[
+        {
+            name: "COVID-19",
+            vocabulary: [
+                "social distancing",
+                "cover your face with mask",
+                "vaccination"
+            ]
+        }
+    ],});
+```
+
+Subscribing to the `Tracker` publisher is achieved by passing a handler to the `subscribeToTrackerEvents` function of your Symbl instance.
+
+- Example
+
+When an tracker event is emitted from the `onTrackerCreated` handler, you can use the `Tracker` object returned and either use the createElement function to create a default element or you can use the data included in the `Tracker` object returned in the handlers callback to create your own element, capture the data and store as a metric, etc…
+
+``` typescript
+        const TrackerHandler = {
+            onTrackerCreated: (topic: Tracker) => {
+                const name = tracker.name;
+                const matches = tracker.matches;
+                let currentCategoryHit=0;
+                //Check the number of non-empty messageRefs in current tracker
+                for (let i = 0; i < matches.length; i++) {
+                    if (matches[i]["messageRefs"].length > 0) {
+                        currentCategoryHit+=1
+                    }
+                }
+                let element = tracker.createElement();
+                element.innerText = name + ':' + String(currentCategoryHit);
+                element.style.fontSize = String(12 + currentCategoryHit)+ 'px';
+                 //In case you have a Trackers document you can add this element with differnt
+                 //font size of tracker based on the number of messageRefs to know how many times the tracker was foud in the converation  
+                document.getElementById('Trackers').appendChild(element);
+
+            }
+        };
+        // Subscribe to realtime tracker events using the handler created above
+        this.symbl.subscribeToTrackerEvents(trackerHandler);
+```
+
 ## Prerequisites
 You must have the following installed:
 
