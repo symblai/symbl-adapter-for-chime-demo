@@ -325,12 +325,99 @@
         <div class="bs-component" style="flex: 1 1 auto; overflow-y: scroll; height: 12%;">
           <ul id="roster" class="list-group"></ul>
         </div>
-        <div class="mx-auto" style="font-size: 15px;">
-            <span class="badge badge-primary mx-auto" style="font-size: 18px;">Messages, Insights and Transcripts</span>
-        </div>
         <div class="message d-flex flex-column pt-3" style="flex: 1 1 auto; overflow: hidden; height: 100%;">
           <div class="list-group receive-message" id="receive-message" style="flex: 1 1 auto; overflow-y: scroll;
-            border: 1px solid rgba(0, 0, 0, 0.125); background-color: #fff"></div>
+            border: 1px solid rgba(0, 0, 0, 0.125); background-color: #fff">
+            <head>
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <style>
+              body {font-family: Arial;}
+              
+              /* Style the tab */
+              .tab {
+                overflow: visible;
+                border: 1px solid #ccc;
+                background-color: #f1f1f1;
+              }
+              
+              /* Style the buttons inside the tab */
+              .tab button {
+                background-color: inherit;
+                float: left;
+                border: none;
+                outline: none;
+                cursor: pointer;
+                padding: 14px 16px;
+                transition: 0.3s;
+                font-size: 17px;
+              }
+              
+              /* Change background color of buttons on hover */
+              .tab button:hover {
+                background-color: #ddd;
+              }
+              
+              /* Create an active/current tablink class */
+              .tab button.active {
+                background-color: #ccc;
+              }
+              
+              /* Style the tab content */
+              .tabcontent {
+                display: none;
+                padding: 6px 12px;
+                border: 1px solid #ccc;
+                border-top: none;
+              }
+              </style>
+              </head>
+              <body>
+              
+              
+              <div class="tab">
+                <button class="tablinks" onclick="openTab(event, 'Transcripts')">Transcripts</button>
+                <button class="tablinks" onclick="openTab(event, 'Insights')">Insights</button>
+                <button class="tablinks" onclick="openTab(event, 'Topics')">Topics</button>
+                <button class="tablinks" onclick="openTab(event, 'Trackers')">Trackers</button>
+                <button class="tablinks" onclick="openTab(event, 'Chat')">Chat</button>
+              </div>
+              
+              <div id="Transcripts" class="tabcontent">
+              </div>
+              
+              <div id="Insights" class="tabcontent">
+              </div>
+              
+              <div id="Topics" class="tabcontent">
+              </div>
+
+              <div id="Trackers" class="tabcontent">
+              </div>
+
+              <div id="Chat" class="tabcontent">
+              </div>
+              
+              <script>
+              document.getElementsByClassName('tablinks')[0].click()
+              function openTab(evt, cityName) {
+                var i, tabcontent, tablinks;
+                tabcontent = document.getElementsByClassName("tabcontent");
+                for (i = 0; i < tabcontent.length; i++) {
+                  tabcontent[i].style.display = "none";
+                }
+                tablinks = document.getElementsByClassName("tablinks");
+                for (i = 0; i < tablinks.length; i++) {
+                  tablinks[i].className = tablinks[i].className.replace(" active", "");
+                }
+                document.getElementById(cityName).style.display = "block";
+                evt.currentTarget.className += " active";
+              }
+              </script>
+                
+              </body>
+            </div>
+
+
           <div class="input-group send-message" style="display:flex;flex:0 0 auto;margin-top:0.2rem">
             <textarea class="form-control shadow-none" id="send-message" rows="1" placeholder="Type a message (markdown supported)" style="display:inline-block; width:100%;
               resize:none; border-color: rgba(0, 0, 0, 0.125); outline: none; padding-left: 1.4rem"></textarea>
