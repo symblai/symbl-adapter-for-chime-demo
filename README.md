@@ -277,6 +277,7 @@ The following will create a CloudFormation stack containing a Lambda and
 API Gateway deployment that runs the `meetingV2` demo. Make sure the bucket and stack names are unique to AWS. 
 
 ```
+cd demos/serverless/
 npm run deploy -- -r us-east-1 -b <my-bucket> -s <my-stack-name> -a meetingV2
 ```
 This script will create an S3 bucket and CloudFormation stack
