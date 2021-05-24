@@ -35,7 +35,7 @@ import {
     ClientVideoStreamReceivingReport,
 } from '../../../../src/index';
 
-import { Symbl, Insight, Caption, TranscriptItem } from 'symbl-chime-adapter';
+import { Symbl, Tracker, Topic, Insight, Caption, TranscriptItem } from '@symblai/symbl-chime-adapter';
 
 
 class DemoTileOrganizer {
@@ -764,6 +764,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
                 @property {number} confidenceThreshold  optional | default: 0.5 | 0.0 - 1.0 minimum confidence value produce valid insight
                 @property {string} languageCode         optional - default: 'en-US' | The language code as per the BCP 47 specification
                 @property {boolean} insightsEnabled     optional - default: true -- false if language code is not english.
+                @property {Array<{name:string,vocabulary:Array<string>}>} trackers     optional - default: array of trackers names and phrases
             }
 		*/
         console.log('Creating new symbl', Symbl.ACCESS_TOKEN, this.configuration);
@@ -778,6 +779,175 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
                     confidenceThreshold: 0.5,
                     languageCode: 'en-US',
                     insightsEnabled: true,
+                    trackers: [
+
+                        {
+                            "name": "Agent Empathy",
+                            "vocabulary": ["I Wish I Could I wish I could give more",
+                                         "Sorry for the inconvenience",
+                                        "Sorry for the confusion",
+                                        "Apologize for the confusion",
+                                        "Sorry I was busy with other customers",
+                                        "Totally understand",
+                                        "Totally understand your position",
+                                        "Totally understand where you're coming from",
+                                        "Totally understand that feeling",
+                                        "Totally understand what you are saying",
+                                        "Totally understand I can realte",
+                                        "Totally understand your frustration",
+                                        "Totally understand hundred percent",
+                                        "I understand your concern",
+                                        "Unfortunately we could not",
+                                        "Unfortunately at this time"
+                                      ]
+                        },
+                        {
+                            "name": "Agent Politeness",
+                            "vocabulary": ["Anything I Can Help With",
+                                          "something I can help you with",
+                                          "How can I help you",
+                                          "appreciate your business",
+                                          "appreciate your help",
+                                          "apreciate your valued business",
+                                          "appreciate your time",
+                                          "appreciate your patience,",
+                                          "excuse me",
+                                          "if you don't mind",
+                                          "beg your pardon",
+                                          "thank you for your patience",
+                                          "Glad to help",
+                                          "happy to help",
+                                          "no worries",
+                                          "it have been my pleasure",
+                                          "thank you for choosing us",
+                                          "happy to return your call as soon as possible",
+                                          "have a great day",
+                                          "have an amazong day",
+                                          "have a great rest of your day",
+                                          "have a good eveining",
+                                          "have a good morning",
+                                          "have a good afternoon",
+                                          "how are you",
+                                          "I am sorry",
+                                          "we are extremly sorry",
+                                          "I am sorry we are just a second away",
+                                          "I am sorry stay on the line momentarily",
+                                          "I am sorry I didn't hear you",
+                                          "Please let me",
+                                          "Please wait please",
+                                          "Please confirm",
+                                          "Please will you",
+                                          "Please can we",
+                                          "Please wait",
+                                          "Sir thanks",
+                                          "Maam thanks",
+                                          "Thank you, pleasure",
+                                          "Thank you, awesome",
+                                          "you're welcome"
+                                        ]
+                        },
+                        {
+                            "name": "Buyer Confusion",
+                            "vocabulary": [
+                                          "Don't Understand",
+                                          "Don't Understand I'm confused",
+                                          "Don't Understand because",
+                                          "It's confusing",
+                                          "Sorry Repeat That",
+                                          "Sorry would you Repeat That",
+                                          "Sorry can you Repeat That",
+                                          "Tell me again",
+                                          "Try to Explain",
+                                          "Let me explain",
+                                          "What Happens If",
+                                          "What Happens If",
+                                          "What was that"
+                            ]
+                        },
+                        {
+                            "name": "Cancellation Language",
+                            "vocabulary": [
+                                          "cancel appointment",
+                                          "cancel membership",
+                                          "cancel meeting",
+                                          "cancel subscription",
+                                          "cancel contract",
+                                          "cancel reservation",
+                                          "cancel for you",
+                                          "I will cancel",
+                                          "Need to Reschedule",
+                                          "Can't Make The Appointment",
+                                          "Go Ahead and Cancel",
+                                          "I Have Appointment NEAR Need Cancel",
+                                          "I Want to Cancel",
+                                          "I Want to discontinue",
+                                          "miss the apointment",
+                                          "miss the meeting",
+                                          "Not Going to Make It",
+                                          "We Need Change Plan",
+                                          "We gonna Change Plan",
+                                          "We have to postpone"
+                            ]
+                        },
+                        {
+                            "name": "Verbal Clarity",
+                            "vocabulary": [
+                              "Could you repeat that",
+                              "Would you repeat that",
+                              "Can you reiterate that one more time",
+                              "can you explain it again",
+                              "cant hear you",
+                              "unable to hear you",
+                              "difficulty hearing you",
+                              "Sorry having trouble hearing from you",
+                              "I am not sure what you are asking",
+                              "I am no sure what you are saying",
+                              "I am no sure what you are referring",
+                              "I am no sure what you meant",
+                              "I dont follow what you are talking",
+                              "I have no idea what you are talking",
+                              "tell me again",
+                              "speak english",
+                              "Having hard time understanding",
+                              "We cant understand",
+                              "you misunderstood",
+                              "We misundestood",
+                              "sorry what was that",
+                              "don't know what was that"
+                            ]
+                        },
+                        {
+                            "name": "Voice Message",
+                            "vocabulary": [
+                              "At the tone please record",
+                              "Please leave message after tome",
+                              "Call back during normal office hours",
+                              "If you are calling about an emergency",
+                              "Our offices are currently closed",
+                              "Our repesentatives are unavailable at this time",
+                              "Please leave message",
+                              "start recording message",
+                              "Begin recording message",
+                              "sending you to his voicemail",
+                              "Leave Name and contact info",
+                              "Leave name and number",
+                              "I can call after",
+                              "Leave message with name",
+                              "leave message with number",
+                              "press to listen",
+                              "press to record",
+                              "press to send",
+                              "Record your message",
+                              "Return call ASAP",
+                              "return your call as soon as possible",
+                              "get back soon",
+                              "get back as quickly as possible",
+                              "Sorry we missed your call",
+                              "sorry we missed you",
+                              "You have reached office"
+                            ]
+                        }
+                    ]
                 }
             );
         } catch (err) {
@@ -832,34 +1002,154 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
                 element.style.width = '100%';
                 element.style.margin = '0';
                 element.style.padding = '1rem';
+                
                 const child = element.querySelector('div');
                 child.style.maxWidth = 'unset';
                 child.style.margin = 'unset';
                 console.log('insight element', element);
 
                 // Get container you wish to add insights to.
-                const messageContainer = document.getElementById('receive-message');
+                const messageContainer = document.getElementById('Insights');
 
                 // Call add on the insight object to add it to DIV
                 insight.add(messageContainer);
             }
         };
-        // Subscribe to realtime insight events using the handler created above
+        // Subscribe to realtime topics events using the handler created above
         this.symbl.subscribeToInsightEvents(insightHandler);
+        
+        const topicHandler = {
+            onTopicCreated: (topic: Topic) => {
+                //Random font color for new topic
+                function getRandomRgb() {
+                    var num = Math.round(0xffffff * Math.random());
+                    var r = num >> 16;
+                    var g = num >> 8 & 255;
+                    var b = num & 255;
+                    return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+                  }
+                let topicsElementList = document.getElementById('Topics').getElementsByClassName('topics-tab');
+                console.log('topicsElementList',topicsElementList);
+              
+                let topicFound = false;
+                const content = topic.phrases;
+                const score = topic.score;
+                let fontSize = 14;
+                //Check if current topic exist in the topics elements list and 
+                //update the font size accoridng to the score
+                if (topicsElementList.length > 0){
+                    
+                    if (score >= 0.5){
+                        fontSize = (score-0.4) * 40 + 8;
+                    }
+                    for (let i = 0; i < topicsElementList.length; i++) {
+                      let currentElement = <HTMLElement>topicsElementList[i]  
+                      if (currentElement.innerText.trim() === content.trim()){
+                        topicFound = true;
+                        currentElement.style.fontSize=String(fontSize)+'px';
+                        break;
+                        } 
+        
+                    }
 
+                }
+                //Add new element in case it was not found in the topic element list 
+                //and in case the topic score is above 0.5
+                if (!topicFound && (score >= 0.5)){
+                    fontSize = (score-0.4) * 40 + 8;
+                    let element = topic.createElement();
+                    element.innerText = content;
+                    element.style.color = getRandomRgb();
+                    element.style.fontSize=String(fontSize)+'px'
+                    document.getElementById('Topics').appendChild(element);
+                }
+            }
+        };
+        // Subscribe to realtime tracker events using the handler created above
+        this.symbl.subscribeToTopicEvents(topicHandler);
+
+        const trackerHandler = {
+            onTrackerCreated: (tracker: Tracker) => {
+                const name = tracker.name;
+                const matches = tracker.matches;
+                const elementId = tracker.id;
+                //Random font color for new tracker
+                function getRandomRgb() {
+                    var num = Math.round(0xffffff * Math.random());
+                    var r = num >> 16;
+                    var g = num >> 8 & 255;
+                    var b = num & 255;
+                    return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+                  }
+                
+                var currentCategoryHit=0;
+                //Check the number of non-empty messageRefs in current tracker
+                for (let i = 0; i < matches.length; i++) {
+                    if (matches[i]["messageRefs"].length > 0) {
+                        currentCategoryHit+=1
+                    }
+                }
+
+
+
+                let trackerElementList = document.getElementById('Trackers').getElementsByClassName('trackers-tab')
+
+                
+                //Check if current tracker exist in the trackers elements list and 
+                //update the font size accoridng to the number of non-empty messageRefs for that tracker
+                let trackerFound = false;
+                if (trackerElementList.length > 0){
+                    for (let i = 0; i < trackerElementList.length; i++) {
+                        let totalCategoryHit = 0;
+                        let currentElement = <HTMLElement>trackerElementList[i];
+                        console.log('currentElement',currentElement,'name',name)
+                        if (currentElement.innerText.trim().split(':')[0] === name.trim()){
+                            trackerFound = true;
+                            totalCategoryHit = parseInt(currentElement.innerText.split(':')[1]) + currentCategoryHit;
+                            console.log('name:',name,'totalCategoryHit:',totalCategoryHit);
+                            currentElement.innerText = name + ':' + String(totalCategoryHit);
+                            if (totalCategoryHit <= 20){
+                              currentElement.style.fontSize = String(12 + totalCategoryHit)+ 'px';
+                            }
+                            else{
+                              currentElement.style.fontSize = '32px';
+                            }
+                            break;
+                        } 
+            
+                    }
+
+                }
+                //Add new element in case it was not found in the tracker element list
+                if (!trackerFound){
+                    let element = tracker.createElement(); 
+                    element.innerText = name + ':' + String(currentCategoryHit);
+                    element.style.fontSize = String(12 + currentCategoryHit)+ 'px';
+                    element.style.color = getRandomRgb(); 
+                    document.getElementById('Trackers').appendChild(element);
+                }  
+            }
+        };
+        // Subscribe to realtime tracker events using the handler created above
+            try{this.symbl.subscribeToTrackerEvents(trackerHandler);}
+            catch (err) {console.log('tracker err:', err)}
+ 
+        
         const transcriptHandler = {
             onTranscriptCreated: (transcript: TranscriptItem) => {
                 const div = document.createElement('div');
+                let datetext = (transcript.timeStamp).toTimeString();
+                datetext = datetext.split(' ')[0];
                 div.innerHTML = `
                     <div style="margin: 0;">
                         <div class="message-bubble-sender">
                             ${transcript.userName}
-                            <span class="badge badge-secondary" style="margin-left: 15px;">Transcript</span>
+                            <span class="badge badge-secondary" style="margin-left: 15px;">${datetext}</span>
                         </div>
                     <div class="message-bubble-self">
                         <p class="markdown">${transcript.message}</p>
                     </div>`
-                const messageContainer = document.getElementById('receive-message');
+                const messageContainer = document.getElementById('Transcripts');
                 messageContainer.append(div);
                 messageContainer.scroll(0, 1000000);
             }
@@ -1084,7 +1374,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
                 return;
             }
             this.lastReceivedMessageTimestamp = dataMessage.timestampMs;
-            const messageDiv = document.getElementById('receive-message') as HTMLDivElement;
+            const messageDiv = document.getElementById('Chat') as HTMLDivElement;
             const messageNameSpan = document.createElement('div') as HTMLDivElement;
             messageNameSpan.classList.add('message-bubble-sender');
             messageNameSpan.innerText = (dataMessage.senderExternalUserId.split('#').slice(-1)[0]);
