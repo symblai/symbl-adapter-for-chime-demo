@@ -225,6 +225,8 @@ To add the Amazon Chime SDK for JavaScript into an existing application,
 install the package directly from npm:
 
 ```
+git clone https://github.com/symblai/symbl-adapter-for-chime-demo
+cd symbl-adapter-for-chime-demo
 npm install
 cd demos/browser
 npm install
