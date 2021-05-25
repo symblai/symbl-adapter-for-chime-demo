@@ -214,6 +214,7 @@ You must have the following installed:
 * npm 6.11 or higher
 
 * [Install the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv1.html)
+* [AWS Configure Access Key and Secret](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html)
 * [Install the AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
 
 
