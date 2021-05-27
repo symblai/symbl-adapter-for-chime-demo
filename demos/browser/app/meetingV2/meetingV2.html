@@ -326,7 +326,7 @@
           <ul id="roster" class="list-group"></ul>
         </div>
         <div class="message d-flex flex-column pt-3" style="flex: 1 1 auto; overflow: hidden; height: 100%;">
-          <div class="list-group receive-message" id="receive-message" style="flex: 1 1 auto; overflow-y: scroll;
+          <div class="list-group receive-message" id="receive-message" style="flex: 1 1 auto; overflow-y: auto;
             border: 1px solid rgba(0, 0, 0, 0.125); background-color: #fff">
             <head>
               <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -368,7 +368,9 @@
                 padding: 6px 12px;
                 border: 1px solid #ccc;
                 border-top: none;
+                max-height:100%;
                 height: 100%;
+                overflow-y: scroll;
               }
               </style>
               </head>
@@ -382,7 +384,7 @@
                 <button class="tablinks" onclick="openTab(event, 'Trackers')">Trackers</button>
                 <button class="tablinks" onclick="openTab(event, 'Chat')">Chat</button>
               </div>
-              
+
               <div id="Transcripts" class="tabcontent">
               </div>
               
@@ -397,6 +399,7 @@
 
               <div id="Chat" class="tabcontent">
               </div>
+
               
               <script>
               document.getElementsByClassName('tablinks')[0].click()
