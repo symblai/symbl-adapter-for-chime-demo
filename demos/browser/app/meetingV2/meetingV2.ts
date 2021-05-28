@@ -1164,6 +1164,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
                 const summaryUrl = await this.symbl.getSummaryUrl();
                 console.info('got summary url', summaryUrl);
                 await navigator.clipboard.writeText(summaryUrl);
+		await window.open(summaryUrl);
             } catch (err) {
                 console.error('Error writing to clipboard', err);
             }
