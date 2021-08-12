@@ -1,4 +1,4 @@
-# Symbl Conversational AI Adapter for Chime SDK Demo App
+# Demo App: Symbl Conversation AI Adapter for Chime SDK 
 
 Symbl's APIs empower developers to enable: 
 - **Real-time** analysis of free-flowing discussions to automatically surface highly relevant summary discussion topics, contextual insights, suggestive action items, follow-ups, decisions, and questions.
